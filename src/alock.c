@@ -217,7 +217,7 @@ static void visualFeedback(struct aFrame* frame, int mode) {
         break;
     case TYPING:
         if (redraw) {
-            alock_draw_frame(frame, "green");
+            //alock_draw_frame(frame, "green");
         }
         break;
     case WRONG:
@@ -279,6 +279,7 @@ static int eventLoop(struct aOpts* opts, struct aXInfo* xi) {
                 case XK_BackSpace:
                     if (rlen > 0)
                         rlen--;
+                    alock_draw_box(frame, rlen);
                     break;
                 case XK_Linefeed:
                 case XK_Return:
@@ -310,6 +311,7 @@ static int eventLoop(struct aOpts* opts, struct aXInfo* xi) {
                     if (rlen < (sizeof(rbuf) - 1)) {
                         rbuf[rlen] = cbuf[0];
                         rlen++;
+                        alock_draw_box(frame, rlen);
                     }
                     break;
                 }

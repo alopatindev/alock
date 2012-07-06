@@ -32,6 +32,8 @@ void alock_show_frame(struct aFrame* frame);
 void alock_hide_frame(struct aFrame* frame);
 void alock_free_frame(struct aFrame* frame);
 
+void alock_draw_box(struct aFrame* frame, int num);
+
 /* ---------------------------------------------------------------- *\
 \* ---------------------------------------------------------------- */
 #endif // _ALOCK_FRAME_H_

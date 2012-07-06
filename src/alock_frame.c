@@ -145,10 +145,39 @@ void alock_draw_frame(struct aFrame* frame, const char* color_name) {
     XAllocNamedColor(dpy, xi->colormap[0], color_name, &frame->color, &tmp);
     gcvals.foreground = frame->color.pixel;
 
-    for (i = 0; i < 4; i++) {
+    for (i = 0; i < 3; i++) {
         XChangeGC(dpy, side[i].gc, GCForeground, &gcvals);
         XFillRectangle(dpy, side[i].win, side[i].gc, 0, 0, side[i].width, side[i].height);
     }
+}
+
+void alock_draw_box(struct aFrame* frame, int num) {
+    struct aSide* side = (struct aSide*)&frame->top;
+    struct aXInfo* xi = frame->xi;
+    Display* dpy = xi->display;
+    XGCValues gcvals;
+    XColor tmp;
+    int i;
+
+    if (!frame->visible) {
+        alock_show_frame(frame);
+    }
+
+
+    XAllocNamedColor(dpy, xi->colormap[0], "black", &frame->color, &tmp);
+    gcvals.foreground = frame->color.pixel;
+
+    XChangeGC(dpy, side[3].gc, GCForeground, &gcvals);
+    XFillRectangle(dpy, side[3].win, side[3].gc,
+                   0, 0, side[3].width, side[3].height);
+
+
+    XAllocNamedColor(dpy, xi->colormap[0], "green", &frame->color, &tmp);
+    gcvals.foreground = frame->color.pixel;
+
+    XChangeGC(dpy, side[3].gc, GCForeground, &gcvals);
+    XFillRectangle(dpy, side[3].win, side[3].gc,
+                   0, 0, side[3].width / 35 * num, side[3].height);
 }
 
 void alock_show_frame(struct aFrame* frame) {

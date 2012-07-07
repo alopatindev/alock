@@ -159,7 +159,7 @@ int get_gr_num(Display *dpy, XkbDescPtr kb) {
     int rv;
 
     if (XkbGetControls(dpy, XKB_CTRLS_MASK, kb) != Success)
-    printf("skb: XkbGetControls() failed.\n");
+    printf("XkbGetControls() failed\n");
     rv = kb->ctrls->num_groups;
     XkbFreeControls(kb, XKB_CTRLS_MASK, 0);
     return rv;
@@ -170,14 +170,14 @@ void get_gr_names(Display *dpy, XkbDescPtr kb, int ngroups, char **groups) {
     int i;
 
     if (XkbGetNames(dpy, XkbGroupNamesMask, kb) != Success)
-        printf("skb: XkbGetNames() failed");
+        printf("XkbGetNames() failed\n");
   
     for (i = 0; i < ngroups; i++) {
         if (kb->names->groups[i]) {
             if ((name = XGetAtomName(dpy, kb->names->groups[i])))
-        snprintf(groups[i], 4, name);
+                snprintf(groups[i], 4, name);
             else
-        printf("skb: XGetAtomName() failed\n");
+                printf("XGetAtomName() failed\n");
         }
     }
     XkbFreeNames(kb, XkbGroupNamesMask, 0);
@@ -187,7 +187,7 @@ void get_active_gr(Display *dpy, int *active) {
     XkbStateRec state;
 
     if (XkbGetState(dpy, XkbUseCoreKbd, &state) != Success)
-    printf("skb: XkbGetState() failed\n");
+        printf("XkbGetState() failed\n");
     *active = state.group;        
 }
 

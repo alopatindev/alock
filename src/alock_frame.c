@@ -22,10 +22,14 @@
 #include "alock.h"
 
 #include <X11/Xlib.h>
+#include <X11/XKBlib.h>
+#include <X11/Xatom.h>
 #include <stdlib.h>
 
 /* ---------------------------------------------------------------- *\
 \* ---------------------------------------------------------------- */
+
+#define XKB_CTRLS_MASK (XkbAllControlsMask & ~(XkbInternalModsMask | XkbIgnoreLockModsMask))
 
 struct aSide {
     Window win;
@@ -149,6 +153,77 @@ void alock_draw_frame(struct aFrame* frame, const char* color_name) {
         XChangeGC(dpy, side[i].gc, GCForeground, &gcvals);
         XFillRectangle(dpy, side[i].win, side[i].gc, 0, 0, side[i].width, side[i].height);
     }
+}
+
+int get_gr_num(Display *dpy, XkbDescPtr kb) {
+    int rv;
+
+    if (XkbGetControls(dpy, XKB_CTRLS_MASK, kb) != Success)
+    printf("skb: XkbGetControls() failed.\n");
+    rv = kb->ctrls->num_groups;
+    XkbFreeControls(kb, XKB_CTRLS_MASK, 0);
+    return rv;
+}
+
+void get_gr_names(Display *dpy, XkbDescPtr kb, int ngroups, char **groups) {
+    char *name = NULL;
+    int i;
+
+    if (XkbGetNames(dpy, XkbGroupNamesMask, kb) != Success)
+        printf("skb: XkbGetNames() failed");
+  
+    for (i = 0; i < ngroups; i++) {
+        if (kb->names->groups[i]) {
+            if ((name = XGetAtomName(dpy, kb->names->groups[i])))
+        snprintf(groups[i], 4, name);
+            else
+        printf("skb: XGetAtomName() failed\n");
+        }
+    }
+    XkbFreeNames(kb, XkbGroupNamesMask, 0);
+}
+
+void get_active_gr(Display *dpy, int *active) {
+    XkbStateRec state;
+
+    if (XkbGetState(dpy, XkbUseCoreKbd, &state) != Success)
+    printf("skb: XkbGetState() failed\n");
+    *active = state.group;        
+}
+
+char** alock_prepare_kb_layouts(struct aFrame* frame) {
+    Display* dpy = frame->xi->display;
+    XkbDescPtr kb = XkbAllocKeyboard();
+
+    int ngroups = 0;
+    char** groups;
+    int i;
+
+    ngroups = get_gr_num(dpy, kb);
+
+    groups = malloc(sizeof(char*)*ngroups);
+    for (i = 0; i < ngroups; i++)
+	    groups[i] = malloc(256); 
+
+    get_gr_names(dpy, kb, ngroups, groups);
+    XkbSelectEvents(dpy, XkbUseCoreKbd, XkbAllEventsMask, XkbAllEventsMask);
+
+    return groups;
+}
+
+void alock_draw_kb_layout(struct aFrame* frame, char** groups) {
+    Display* dpy = frame->xi->display;
+    //XkbEvent ev;
+    int active = 0;
+    static int old = -1;
+
+    get_active_gr(dpy, &active);
+    if(active != old) {
+        puts(groups[active]);
+        fflush(stdout);
+        old = active;
+    }
+	//XNextEvent(dpy, &ev.core);
 }
 
 void alock_draw_box(struct aFrame* frame, int num) {

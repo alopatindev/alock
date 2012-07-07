@@ -23,6 +23,8 @@
 /* ---------------------------------------------------------------- *\
 \* ---------------------------------------------------------------- */
 
+#include <X11/XKBlib.h>
+
 struct aXInfo;
 struct aFrame;
 
@@ -33,6 +35,12 @@ void alock_hide_frame(struct aFrame* frame);
 void alock_free_frame(struct aFrame* frame);
 
 void alock_draw_box(struct aFrame* frame, int num);
+
+int get_gr_num(Display *dpy, XkbDescPtr kb);
+void get_gr_names(Display *dpy, XkbDescPtr kb, int ngroups, char **groups);
+void get_active_gr(Display *dpy, int *active);
+char** alock_prepare_kb_layouts(struct aFrame* frame);
+void alock_draw_kb_layout(struct aFrame* frame, char** groups);
 
 /* ---------------------------------------------------------------- *\
 \* ---------------------------------------------------------------- */

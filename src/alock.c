@@ -244,6 +244,9 @@ static int eventLoop(struct aOpts* opts, struct aXInfo* xi) {
 
     struct aFrame* frame = alock_create_frame(xi, 0, 0, xi->width_of_root[0], xi->height_of_root[0], 10);
 
+
+    char** groups = alock_prepare_kb_layouts(frame);
+
     for(;;) {
 
         current_time = elapsedTime();
@@ -253,6 +256,8 @@ static int eventLoop(struct aOpts* opts, struct aXInfo* xi) {
 
             switch (ev.type) {
             case KeyPress:
+
+                alock_draw_kb_layout(frame, groups);
 
                 last_key_time = current_time;
 
@@ -342,6 +347,8 @@ static int eventLoop(struct aOpts* opts, struct aXInfo* xi) {
         }
 
     }
+
+    free(groups);
 
     // normally, we shouldnt arrive here at all
     alock_free_frame(frame);

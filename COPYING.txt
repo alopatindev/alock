@@ -1,0 +1,2 @@
+This software licensed by MIT and GPL 3 public licenses.
+See LICENSE.txt and LICENSE-GPL3.txt for details.

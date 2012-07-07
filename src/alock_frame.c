@@ -212,18 +212,38 @@ char** alock_prepare_kb_layouts(struct aFrame* frame) {
 }
 
 void alock_draw_kb_layout(struct aFrame* frame, char** groups) {
-    Display* dpy = frame->xi->display;
+    struct aXInfo* xi = frame->xi;
+    struct aSide* side = (struct aSide*)&frame->top;
+    Display* dpy = xi->display;
+    XGCValues gcvals;
+    XColor tmp;
     //XkbEvent ev;
     int active = 0;
     static int old = -1;
+    char color_name[5];
 
     get_active_gr(dpy, &active);
     if(active != old) {
-        puts(groups[active]);
-        fflush(stdout);
+        /*puts(groups[active]);
+        fflush(stdout);*/
+
+        if (strncmp(groups[active], "Eng", 4) != 0)
+            strncpy(color_name, "red", 5);
+        else
+            strncpy(color_name, "blue", 5);
+
         old = active;
     }
 	//XNextEvent(dpy, &ev.core);
+    
+
+    XAllocNamedColor(dpy, xi->colormap[0], color_name, &frame->color, &tmp);
+    gcvals.foreground = frame->color.pixel;
+
+    XChangeGC(dpy, side[3].gc, GCForeground, &gcvals);
+    XFillRectangle(dpy, side[3].win, side[3].gc,
+                   side[3].width - side[3].width / 35, 0,
+                   side[3].width / 35, side[3].height);
 }
 
 void alock_draw_box(struct aFrame* frame, int num) {

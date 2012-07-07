@@ -256,9 +256,6 @@ static int eventLoop(struct aOpts* opts, struct aXInfo* xi) {
 
             switch (ev.type) {
             case KeyPress:
-
-                alock_draw_kb_layout(frame, groups);
-
                 last_key_time = current_time;
 
                 if (last_key_time < timeout) {
@@ -320,6 +317,8 @@ static int eventLoop(struct aOpts* opts, struct aXInfo* xi) {
                     }
                     break;
                 }
+                alock_draw_kb_layout(frame, groups);
+
                 break;
             case Expose: {
                     XExposeEvent* eev = (XExposeEvent*)&ev;
